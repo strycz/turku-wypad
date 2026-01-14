@@ -31,14 +31,16 @@ export function useFirebaseState<T>(path: string, initialValue: T) {
       valueToStore = newValue;
     }
 
-    // Update local immediately (optional, onValue will trigger anyway but might feel laggy without this)
+    // Optimization: prevent writing if value hasn't changed (referential check)
+    if (valueToStore === state) {
+        return;
+    }
+
+    // Update local immediately
     setState(valueToStore);
 
     // Sync to Firebase
-    console.log(`[Firebase] Setting path: ${path} to:`, valueToStore);
-    set(ref(database, path), valueToStore)
-      .then(() => console.log(`[Firebase] Write success for ${path}`))
-      .catch((err) => {
+    set(ref(database, path), valueToStore).catch((err) => {
         console.error("Firebase set error:", err);
     });
   };
