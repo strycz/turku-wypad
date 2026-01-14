@@ -30,7 +30,7 @@ export const schedule: DayPlan[] = [
       { 
         time: "16:00–17:30", 
         title: "Przyjazd / check-in", 
-        location: "https://www.google.com/maps/search/?api=1&query=Turku+Center" 
+        location: "https://maps.app.goo.gl/io8hqU14TmbNBdMo8" 
       },
       { 
         time: "17:45–18:45", 
