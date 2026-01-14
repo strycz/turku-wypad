@@ -66,6 +66,7 @@ export const Schedule = ({
   const [now, setNow] = useState(new Date());
   // Store notes as "dayIndex-itemIndex": "note content"
   const [notes, setNotes] = useFirebaseState<Record<string, string>>("schedule-notes", {});
+  const [noteHeights, setNoteHeights] = useFirebaseState<Record<string, string>>("schedule-note-heights", {});
 
   useEffect(() => {
     const timer = setInterval(() => setNow(new Date()), 60000); 
@@ -75,6 +76,15 @@ export const Schedule = ({
   const handleNoteChange = (dayIndex: number, itemIndex: number, val: string) => {
     const key = `${dayIndex}-${itemIndex}`;
     setNotes((prev) => ({ ...prev, [key]: val }));
+  };
+
+  const handleResize = (dayIndex: number, itemIndex: number, e: React.MouseEvent<HTMLTextAreaElement>) => {
+    const target = e.target as HTMLTextAreaElement;
+    // We only care if the user actually resized it (browser sets inline style)
+    if (target.style.height) {
+        const key = `${dayIndex}-${itemIndex}`;
+        setNoteHeights((prev) => ({ ...prev, [key]: target.style.height }));
+    }
   };
 
   const currentDayIndex = now.getDay();
@@ -169,6 +179,8 @@ export const Schedule = ({
                         placeholder="Notatka..."
                         value={notes[noteKey] || ""}
                         onChange={(e) => handleNoteChange(dIndex, i, e.target.value)}
+                        onMouseUp={(e) => handleResize(dIndex, i, e)}
+                        style={noteHeights[noteKey] ? { height: noteHeights[noteKey] } : undefined}
                       />
                     </div>
                   </li>
