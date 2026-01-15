@@ -37,9 +37,11 @@ export default function App() {
     <>
       <main className="container tab-content">
         <header className="app-header">
-          <div>
-            <h1>Turku · Męski Wypad </h1>
-            <div style={{ fontSize: "2rem" }}>🇫🇮</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <h1>Turku</h1>
+                <span style={{ fontSize: "1.5rem" }}>🇫🇮</span>
+            </div>
             <Weather />
           </div>
           <div className="controls">
@@ -49,8 +51,8 @@ export default function App() {
                   onClick={() => setMinimalMode(m => !m)}
                   className={clsx("btn-control", minimalMode && "active")}
                 >
-                  {minimalMode ? <Eye size={18} /> : <EyeOff size={18} />}
-                  <span style={{ marginLeft: '0.5rem' }}>Focus</span>
+                  {minimalMode ? <Eye size={16} /> : <EyeOff size={16} />}
+                  <span style={{ marginLeft: '0.4rem' }}>Focus</span>
                 </button>
                 <button 
                   onClick={() => setViewMode(v => v === "all" ? "today" : "all")}
@@ -60,8 +62,8 @@ export default function App() {
                 </button>
               </>
             )}
-            <button onClick={toggleTheme} className="btn-control theme-toggle">
-              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            <button onClick={toggleTheme} className="btn-control theme-toggle" style={{ padding: '0.4rem' }}>
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
         </header>
