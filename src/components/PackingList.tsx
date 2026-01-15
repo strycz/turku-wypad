@@ -56,48 +56,80 @@ export const PackingList = () => {
 
     return (
         <div className="packing-list-container">
-            <form onSubmit={addItem} className="search-bar" style={{ marginBottom: '1rem', display: 'flex', gap: '0.5rem' }}>
+            <form onSubmit={addItem} className="card glass-panel flex-row" style={{ marginBottom: '1.5rem', padding: '0.75rem' }}>
                 <input 
                     type="text" 
                     value={newItemText}
                     onChange={(e) => setNewItemText(e.target.value)}
-                    placeholder="Dodaj rzecz do zabrania..."
-                    className="role-input"
-                    style={{ flex: 1 }}
+                    placeholder="Dodaj rzecz..."
+                    className="input"
+                    style={{ border: 'none', background: 'transparent' }}
                 />
                 <button 
                     type="submit" 
-                    className="btn-control active"
+                    className="btn btn-primary"
                     disabled={!newItemText.trim()}
-                    style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    style={{ width: '48px', height: '48px', borderRadius: '50%', padding: 0, flexShrink: 0 }}
                 >
-                    <Plus size={20} />
+                    <Plus size={24} />
                 </button>
             </form>
 
-            <ul className="checklist">
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {items.map((item) => (
-                    <li key={item.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                        <label className="grow" style={{ marginBottom: 0 }}>
+                    <li 
+                        key={item.id} 
+                        className="card"
+                        style={{ 
+                            padding: '0.75rem 1rem', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'space-between',
+                            opacity: item.checked ? 0.6 : 1,
+                            transition: 'opacity 0.2s',
+                            gap: '1rem'
+                        }}
+                    >
+                        <label className="flex-row" style={{ flex: 1, cursor: 'pointer', gap: '1rem', margin: 0 }}>
+                            <div style={{ 
+                                width: '24px', 
+                                height: '24px', 
+                                border: `2px solid ${item.checked ? 'var(--success)' : 'var(--text-secondary)'}`, 
+                                borderRadius: '6px',
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                justifyContent: 'center',
+                                background: item.checked ? 'var(--success)' : 'transparent',
+                                flexShrink: 0
+                            }}>
+                                {item.checked && <span style={{ color: 'white', fontWeight: 'bold', fontSize: '14px' }}>✓</span>}
+                            </div>
                             <input
                                 type="checkbox"
                                 checked={item.checked}
                                 onChange={() => toggleItem(item.id)}
+                                style={{ display: 'none' }}
                             />
                             <span style={{ 
+                                fontSize: '1.1rem',
                                 textDecoration: item.checked ? 'line-through' : 'none',
-                                color: item.checked ? 'var(--muted)' : 'var(--text)',
-                                marginLeft: '0.75rem'
+                                color: item.checked ? 'var(--text-secondary)' : 'var(--text-primary)',
+                                fontWeight: 500
                             }}>
                                 {item.text}
                             </span>
                         </label>
+                        
                         <button 
-                            onClick={() => deleteItem(item.id)}
-                            className="btn-del"
-                            style={{ fontSize: '1rem', opacity: 0.5 }}
+                            onClick={(e) => { e.stopPropagation(); deleteItem(item.id); }}
+                            className="btn-icon"
+                            style={{ 
+                                color: 'var(--danger)',
+                                background: 'transparent',
+                                flexShrink: 0
+                            }}
                         >
-                            <Trash2 size={16} />
+                            <Trash2 size={20} />
                         </button>
                     </li>
                 ))}

@@ -1,7 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import type { ScheduleItem } from '../data';
-import { storage } from '../firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { v4 as uuidv4 } from 'uuid';
 
 type Props = {
@@ -16,29 +15,10 @@ export const ScheduleItemEditor = ({ item, onSave, onCancel, onDelete }: Props) 
   const [time, setTime] = useState(item?.time || '');
   const [description, setDescription] = useState(item?.description || '');
   const [location, setLocation] = useState(item?.location || '');
-  const [imageUrl, setImageUrl] = useState(item?.imageUrl || '');
-  const [uploading, setUploading] = useState(false);
+  // Legacy image URL preservation (readonly)
+  const imageUrl = item?.imageUrl || '';
   
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setUploading(true);
-      try {
-        const storageRef = ref(storage, `schedule-images/${uuidv4()}-${file.name}`);
-        await uploadBytes(storageRef, file);
-        const url = await getDownloadURL(storageRef);
-        setImageUrl(url);
-      } catch (err) {
-        console.error("Upload failed", err);
-        alert("Upload failed!");
-      } finally {
-        setUploading(false);
-      }
-    }
-  };
-
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
@@ -53,79 +33,75 @@ export const ScheduleItemEditor = ({ item, onSave, onCancel, onDelete }: Props) 
 
   return (
     <div className="modal-overlay">
-      <div className="modal">
-        <h3>{item ? 'Edytuj wydarzenie' : 'Dodaj wydarzenie'}</h3>
-        <form onSubmit={handleSubmit} className="editor-form">
+      <div className="modal-content" style={{ position: 'relative' }}>
+          {item && onDelete && (
+              <button 
+                type="button" 
+                onClick={onDelete} 
+                className="btn-icon" 
+                style={{ 
+                    position: 'absolute', 
+                    top: '1rem', 
+                    right: '1rem', 
+                    color: 'var(--danger)',
+                    zIndex: 10
+                }}
+              >
+                  <Trash2 size={24} />
+              </button>
+          )}
+        <h3 style={{ marginBottom: '1.5rem', paddingRight: '2.5rem' }}>{item ? 'Edytuj wydarzenie' : 'Dodaj wydarzenie'}</h3>
+        <form onSubmit={handleSubmit} className="flex-col">
           <label>
-            Godzina (np. 16:00–17:30)
+            <span className="input-label">Godzina</span>
             <input 
               value={time} 
               onChange={e => setTime(e.target.value)} 
               placeholder="HH:MM lub HH:MM–HH:MM"
+              className="form-input"
               required 
             />
           </label>
           
           <label>
-            Tytuł
+            <span className="input-label">Tytuł</span>
             <input 
               value={title} 
               onChange={e => setTitle(e.target.value)} 
               placeholder="Co robimy?"
+              className="form-input"
               required 
             />
           </label>
 
           <label>
-            Opis (opcjonalnie)
+            <span className="input-label">Opis (opcjonalnie)</span>
             <textarea 
               value={description} 
               onChange={e => setDescription(e.target.value)} 
               placeholder="Szczegóły..."
               rows={3}
+              className="form-input"
             />
           </label>
 
           <label>
-            Link do Mapy (opcjonalnie)
+            <span className="input-label">Link do Mapy (opcjonalnie)</span>
             <input 
               value={location} 
               onChange={e => setLocation(e.target.value)} 
               placeholder="https://maps.google.com/..."
+              className="form-input"
             />
           </label>
 
-          <div className="image-upload">
-            <label>Zdjęcie / Załącznik</label>
-            {imageUrl && (
-              <div className="image-preview">
-                <img src={imageUrl} alt="Preview" />
-                <button type="button" onClick={() => setImageUrl('')}>Usuń</button>
-              </div>
-            )}
-            {!imageUrl && (
-              <input 
-                type="file" 
-                accept="image/*" 
-                ref={fileInputRef}
-                onChange={handleFileChange}
-                disabled={uploading}
-              />
-            )}
-            {uploading && <span>Wgrywanie... ⏳</span>}
-          </div>
 
-          <div className="modal-actions">
-            {item && onDelete && (
-              <button type="button" onClick={onDelete} className="btn-del">
-                Usuń
-              </button>
-            )}
-            <div className="grow" />
-            <button type="button" onClick={onCancel} className="btn-cancel">
+
+          <div style={{ marginTop: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.75rem', justifyContent: 'flex-end' }}>
+            <button type="button" onClick={onCancel} className="btn btn-secondary">
               Anuluj
             </button>
-            <button type="submit" className="btn-save" disabled={uploading}>
+            <button type="submit" className="btn btn-primary">
               Zapisz
             </button>
           </div>

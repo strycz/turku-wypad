@@ -1,21 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import clsx from "clsx";
 import { Schedule } from "./components/Schedule";
 import { PackingList } from "./components/PackingList";
 import { Roles } from "./components/Roles";
 import { Budget } from "./components/Budget";
-import { Weather } from "./components/Weather";
 import { PhotoAlbum } from "./components/PhotoAlbum";
+import { Weather } from "./components/Weather";
 import "./index.css";
 import { 
   Calendar, 
   Users, 
   Wallet, 
   Backpack, 
-  Sun, 
-  Moon, 
-  Eye, 
-  EyeOff,
   Image
 } from "lucide-react";
 
@@ -23,121 +19,84 @@ type Tab = "schedule" | "squad" | "budget" | "items" | "album";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>("schedule");
-  const [viewMode, setViewMode] = useState<"all" | "today">("all");
-  const [minimalMode, setMinimalMode] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
 
-  useEffect(() => {
-    document.body.className = theme;
-  }, [theme]);
+  const renderContent = () => {
+    switch (activeTab) {
+      case "schedule": return <Schedule />;
+      case "squad": return <Roles />;
+      case "budget": return <Budget />;
+      case "items": return <PackingList />;
+      case "album": return <PhotoAlbum />;
+      default: return <Schedule />;
+    }
+  };
 
-  const toggleTheme = () => setTheme((t) => (t === "dark" ? "light" : "dark"));
+  const getPageTitle = () => {
+    switch (activeTab) {
+      case "schedule": return "Plan Wyjazdu";
+      case "squad": return "Ekipa";
+      case "budget": return "Budżet";
+      case "items": return "Lista";
+      case "album": return "Album";
+    }
+  };
 
   return (
     <>
-      <main className="container tab-content">
-        <header className="app-header">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <h1>Turku</h1>
-                <span style={{ fontSize: "1.5rem" }}>🇫🇮</span>
-            </div>
-            <Weather />
+      <header className="app-header">
+        <div>
+          <h1 style={{ fontSize: '1.75rem', marginBottom: '0.25rem' }}>Turku '26</h1>
+          <div className="flex-row" style={{ gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
+            <span>🇫🇮 16–18 Stycznia</span>
           </div>
-          <div className="controls">
-            {activeTab === "schedule" && (
-              <>
-                <button 
-                  onClick={() => setMinimalMode(m => !m)}
-                  className={clsx("btn-control", minimalMode && "active")}
-                >
-                  {minimalMode ? <Eye size={16} /> : <EyeOff size={16} />}
-                  <span style={{ marginLeft: '0.4rem' }}>Focus</span>
-                </button>
-                <button 
-                  onClick={() => setViewMode(v => v === "all" ? "today" : "all")}
-                  className={clsx("btn-control", viewMode === "today" && "active")}
-                >
-                  {viewMode === "all" ? "Wszystko" : "Dziś"}
-                </button>
-              </>
-            )}
-            <button onClick={toggleTheme} className="btn-control theme-toggle" style={{ padding: '0.4rem' }}>
-              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-          </div>
-        </header>
+        </div>
+        <Weather />
+      </header>
 
-        {activeTab === "schedule" && (
-          <section className="tab-pane">
-            <Schedule viewMode={viewMode} minimalMode={minimalMode} />
-          </section>
-        )}
-
-        {viewMode === "all" && activeTab === "squad" && (
-          <section className="tab-pane">
-            <h2><Users className="icon-inline" size={24} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} /> Ekipa</h2>
-            <Roles />
-          </section>
-        )}
-
-        {activeTab === "budget" && (
-          <section className="tab-pane">
-            <h2><Wallet className="icon-inline" size={24} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} /> Budżet</h2>
-            <Budget />
-          </section>
-        )}
-
-        {activeTab === "items" && (
-          <section className="tab-pane">
-            <h2><Backpack className="icon-inline" size={24} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} /> Lista</h2>
-            <PackingList />
-          </section>
-        )}
-
-        {activeTab === "album" && (
-          <section className="tab-pane">
-            <h2><Image className="icon-inline" size={24} style={{ verticalAlign: 'middle', marginRight: '0.5rem' }} /> Album</h2>
-            <PhotoAlbum />
-          </section>
-        )}
+      <main className="container animate-enter">
+        <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h2>{getPageTitle()}</h2>
+          {/* Optional: Contextual Actions could go here */}
+        </div>
+        
+        {renderContent()}
       </main>
 
-      <nav className="bottom-nav">
+      <nav className="nav-bar">
         <button 
           className={clsx("nav-item", activeTab === "schedule" && "active")}
           onClick={() => setActiveTab("schedule")}
         >
-          <Calendar size={24} />
-          <span>Plan</span>
-        </button>
-        <button 
-          className={clsx("nav-item", activeTab === "squad" && "active")}
-          onClick={() => setActiveTab("squad")}
-        >
-          <Users size={24} />
-          <span>Ekipa</span>
-        </button>
-        <button 
-          className={clsx("nav-item", activeTab === "budget" && "active")}
-          onClick={() => setActiveTab("budget")}
-        >
-          <Wallet size={24} />
-          <span>Kasa</span>
+          <Calendar size={24} strokeWidth={activeTab === "schedule" ? 2.5 : 2} />
+          <span style={{ fontSize: '10px', fontWeight: 600 }}>Plan</span>
         </button>
         <button 
           className={clsx("nav-item", activeTab === "items" && "active")}
           onClick={() => setActiveTab("items")}
         >
-          <Backpack size={24} />
-          <span>Lista</span>
+          <Backpack size={24} strokeWidth={activeTab === "items" ? 2.5 : 2} />
+          <span style={{ fontSize: '10px', fontWeight: 600 }}>Lista</span>
+        </button>
+        <button 
+          className={clsx("nav-item", activeTab === "budget" && "active")}
+          onClick={() => setActiveTab("budget")}
+        >
+          <Wallet size={24} strokeWidth={activeTab === "budget" ? 2.5 : 2} />
+          <span style={{ fontSize: '10px', fontWeight: 600 }}>Kasa</span>
+        </button>
+        <button 
+          className={clsx("nav-item", activeTab === "squad" && "active")}
+          onClick={() => setActiveTab("squad")}
+        >
+          <Users size={24} strokeWidth={activeTab === "squad" ? 2.5 : 2} />
+          <span style={{ fontSize: '10px', fontWeight: 600 }}>Ekipa</span>
         </button>
         <button 
           className={clsx("nav-item", activeTab === "album" && "active")}
           onClick={() => setActiveTab("album")}
         >
-          <Image size={24} />
-          <span>Album</span>
+          <Image size={24} strokeWidth={activeTab === "album" ? 2.5 : 2} />
+          <span style={{ fontSize: '10px', fontWeight: 600 }}>Album</span>
         </button>
       </nav>
     </>

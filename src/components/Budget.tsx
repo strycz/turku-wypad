@@ -145,118 +145,114 @@ export const Budget = () => {
 
   return (
     <div className="budget-container">
-      <div className="budget-summary">
-        <div className="summary-item">
-          <span>Łącznie</span>
-          <strong>{total.toFixed(2)} €</strong>
+      <div className="grid-2" style={{ marginBottom: '1.5rem' }}>
+        <div className="card text-center">
+          <div className="text-muted" style={{ fontSize: '0.8rem', textTransform: 'uppercase' }}>Łącznie</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--primary)' }}>{total.toFixed(2)} €</div>
         </div>
-        <div className="summary-item">
-          <span>Na głowę (~{headCount})</span>
-          <strong>{perPerson.toFixed(2)} €</strong>
+        <div className="card text-center">
+          <div className="text-muted" style={{ fontSize: '0.8rem', textTransform: 'uppercase' }}>Na głowę (~{headCount})</div>
+          <div style={{ fontSize: '1.75rem', fontWeight: 700, color: 'var(--success)' }}>{perPerson.toFixed(2)} €</div>
         </div>
       </div>
 
-      <form onSubmit={addExpense} className="budget-form">
-        <input
-          type="text"
-          placeholder="Co? (np. Taxi)"
-          value={newWhat}
-          onChange={(e) => setNewWhat(e.target.value)}
-          className="budget-input grow"
-        />
-        <input
-          type="number"
-          placeholder="€"
-          value={newCost}
-          onChange={(e) => setNewCost(e.target.value)}
-          className="budget-input cost"
-          step="0.01"
-        />
+      <form onSubmit={addExpense} className="card glass-panel" style={{ marginBottom: '1.5rem' }}>
+        <div className="input-group">
+            <input
+              type="text"
+              placeholder="Co? (np. Taxi)"
+              value={newWhat}
+              onChange={(e) => setNewWhat(e.target.value)}
+              className="input"
+              required
+            />
+        </div>
         
-        {members.length > 0 ? (
-          <select
-            value={newWho}
-            onChange={(e) => setNewWho(e.target.value)}
-            className="budget-input who"
-            style={{ appearance: 'none' }} // handled by CSS now but keeping generic fallback
-            required
-          >
-            <option value="" disabled>Kto?</option>
-            {members.map(m => (
-              <option key={m.id} value={m.name}>
-                {m.name || "Bez imienia"}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <input
-            type="text"
-            placeholder="Kto?"
-            value={newWho}
-            onChange={(e) => setNewWho(e.target.value)}
-            className="budget-input who"
-          />
-        )}
+        <div className="grid-2">
+            <input
+              type="number"
+              placeholder="Kwota (€)"
+              value={newCost}
+              onChange={(e) => setNewCost(e.target.value)}
+              className="input"
+              step="0.01"
+              required
+            />
+            
+            {members.length > 0 ? (
+              <select
+                value={newWho}
+                onChange={(e) => setNewWho(e.target.value)}
+                className="input"
+                required
+              >
+                <option value="" disabled>Kto?</option>
+                {members.map(m => (
+                  <option key={m.id} value={m.name}>
+                    {m.name || "Bez imienia"}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                placeholder="Kto?"
+                value={newWho}
+                onChange={(e) => setNewWho(e.target.value)}
+                className="input"
+                required
+              />
+            )}
+        </div>
         
-        <button type="submit" className="btn-add">+</button>
+        <button type="submit" className="btn btn-primary" style={{ width: '100%', marginTop: '1rem' }}>+ Dodaj Wydatek</button>
       </form>
 
-      <ul className="budget-list">
+      <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {expenses.map((e) => (
-          <li key={e.id} className="budget-item">
-            <div className="budget-info">
-              <span className="what">{e.what}</span>
-              <span className="who muted">płacił: {e.who}</span>
+          <li key={e.id} className="card" style={{ padding: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div>
+              <div style={{ fontWeight: 600 }}>{e.what}</div>
+              <div className="text-muted" style={{ fontSize: '0.85rem' }}>płacił: {e.who}</div>
             </div>
-            <div className="budget-actions">
-              <span className="cost">{e.cost.toFixed(2)} €</span>
-              <button onClick={() => removeExpense(e.id)} className="btn-del">×</button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>{e.cost.toFixed(2)} €</span>
+              <button onClick={() => removeExpense(e.id)} className="btn-icon" style={{ color: 'var(--danger)', width: '32px', height: '32px' }}>×</button>
             </div>
           </li>
         ))}
         {expenses.length === 0 && (
-          <li className="muted empty-msg">Brak wydatków. Dodaj coś!</li>
+          <li className="text-center text-muted" style={{ padding: '2rem' }}>Brak wydatków. Kto pierwszy stawia?</li>
         )}
       </ul>
 
       {expenses.length > 0 && (
         <div style={{ marginTop: '2rem', textAlign: 'center' }}>
-          <button className="btn-control" onClick={resolveDebts}>
+          <button className="btn btn-secondary" onClick={resolveDebts}>
              💸 Rozlicz (Smart Resolve)
           </button>
         </div>
       )}
 
       {settlementPlan && (
-        <div className="settlement-modal" style={{
-            marginTop: '1rem', 
-            background: 'rgba(0,0,0,0.3)', 
-            padding: '1rem', 
-            borderRadius: '12px',
-            border: '1px solid var(--accent)'
-        }}>
-            <h4 style={{ margin: '0 0 1rem 0', color: 'var(--accent)' }}>Plan Rozliczeń</h4>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {settlementPlan.map((line, i) => (
-                    <li key={i} style={{ padding: '0.25rem 0', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                        {line}
-                    </li>
-                ))}
-            </ul>
-            <button 
-                onClick={() => setSettlementPlan(null)} 
-                style={{ 
-                    marginTop: '1rem', 
-                    background: 'transparent', 
-                    border: '1px solid var(--muted)', 
-                    color: 'var(--muted)',
-                    padding: '0.25rem 1rem',
-                    borderRadius: '20px',
-                    cursor: 'pointer'
-                }}
-            >
-                Zamknij
-            </button>
+        <div className="modal-overlay" onClick={() => setSettlementPlan(null)}>
+            <div className="modal-content" onClick={e => e.stopPropagation()}>
+                <h3 style={{ marginBottom: '1rem', color: 'var(--primary)' }}>Plan Rozliczeń</h3>
+                <ul style={{ listStyle: 'none', padding: 0 }}>
+                    {settlementPlan.map((line, i) => (
+                        <li key={i} style={{ padding: '0.75rem 0', borderBottom: '1px solid var(--glass-border)', fontSize: '1.1rem' }}>
+                            {line}
+                        </li>
+                    ))}
+                </ul>
+                <button 
+                    onClick={() => setSettlementPlan(null)} 
+                    className="btn btn-primary"
+                    style={{ width: '100%', marginTop: '1.5rem' }}
+                >
+                    Zamknij
+                </button>
+            </div>
         </div>
       )}
     </div>

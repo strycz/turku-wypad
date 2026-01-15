@@ -34,30 +34,32 @@ export const Roles = () => {
 
   return (
     <div>
-      <ul className="checklist roles-list">
+      <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {list.map((member) => (
-          <li key={member.id} className="role-item">
-            <div className="role-inputs" style={{ display: 'flex', gap: '0.5rem', flex: 1 }}>
-              <input
-                type="text"
-                className="role-input"
-                placeholder="Imię (np. Janek)"
-                value={member.name}
-                onChange={(e) => updateMember(member.id, "name", e.target.value)}
-                style={{ width: '100%' }}
-              />
+          <li key={member.id} className="card" style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: 'var(--primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: 'white' }}>
+                 {member.name.charAt(0).toUpperCase() || "?"}
             </div>
-            <button className="btn-del" onClick={() => removeMember(member.id)} style={{ marginLeft: '0.5rem' }}>×</button>
+            <input
+              type="text"
+              className="input"
+              placeholder="Imię..."
+              value={member.name}
+              onChange={(e) => updateMember(member.id, "name", e.target.value)}
+              style={{ flex: 1, background: 'transparent', border: 'none', padding: 0, height: 'auto' }}
+            />
+            <button className="btn-icon" onClick={() => removeMember(member.id)} style={{ color: 'var(--text-tertiary)' }}>×</button>
           </li>
         ))}
       </ul>
-      <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-        <button className="btn-control" onClick={addMember}>+ Dodaj Osobę</button>
+      
+      <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
+        <button className="btn btn-secondary" onClick={addMember} style={{ width: '100%' }}>+ Dodaj Osobę</button>
       </div>
       
       {list.length === 0 && (
          <div style={{ textAlign: 'center', marginTop: '1rem' }}>
-            <button className="btn-control active" onClick={() => setSquad(DEFAULT_ROLES)}>
+            <button className="btn btn-primary" onClick={() => setSquad(DEFAULT_ROLES)}>
                Wczytaj Domyślnych (4 osoby)
             </button>
          </div>
