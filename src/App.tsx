@@ -19,10 +19,11 @@ type Tab = "schedule" | "squad" | "budget" | "items" | "album";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>("schedule");
+  const [viewToday, setViewToday] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
-      case "schedule": return <Schedule />;
+      case "schedule": return <Schedule viewMode={viewToday ? "today" : "all"} />;
       case "squad": return <Roles />;
       case "budget": return <Budget />;
       case "items": return <PackingList />;
@@ -56,7 +57,15 @@ export default function App() {
       <main className="container animate-enter">
         <div style={{ marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <h2>{getPageTitle()}</h2>
-          {/* Optional: Contextual Actions could go here */}
+          {activeTab === "schedule" && (
+            <button 
+                onClick={() => setViewToday(!viewToday)}
+                className={clsx("btn btn-secondary", viewToday && "active")}
+                style={{ height: '32px', fontSize: '0.85rem', padding: '0 1rem' }}
+            >
+                {viewToday ? "Dzisiaj" : "Całość"}
+            </button>
+          )}
         </div>
         
         {renderContent()}
